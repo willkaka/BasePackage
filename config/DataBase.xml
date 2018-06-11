@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="GB2312"?>
+<DataBases>
+    <!-- 零售信贷全流程数据库设置-->    
+    <DataBase DBName="Loan" Env="DEV">
+        <URL>jdbc:oracle:thin:@10.1.105.157:1525:d0dspm</URL>
+        <UserName>dspmopr</UserName>
+        <Password>Dsfzzxd10</Password>
+        <DriverName>oracle.jdbc.driver.OracleDriver</DriverName>
+    </DataBase>
+    
+    <DataBase DBName="Loan" Env="ST41">
+        <URL>jdbc:oracle:thin:@10.1.105.158:1529:t3dspm</URL>
+        <UserName>dspmopr</UserName>
+        <Password>Dsf##xd30</Password>
+        <DriverName>oracle.jdbc.driver.OracleDriver</DriverName>
+    </DataBase>
+        
+    <DataBase DBName="Loan" Env="ST84">
+        <URL>jdbc:oracle:thin:@10.30.84.63:1533:t13dspm</URL>
+        <UserName>dspmopr</UserName>
+        <Password>Fdajkjf12#13</Password>
+        <DriverName>oracle.jdbc.driver.OracleDriver</DriverName>
+    </DataBase>
+    
+    <DataBase DBName="Loan" Env="ST106">
+        <URL>jdbc:oracle:thin:@10.30.84.181:1531:t11dspm</URL>
+        <UserName>dspmopr</UserName>
+        <Password>Fdajk#1234a</Password>
+        <DriverName>oracle.jdbc.driver.OracleDriver</DriverName>
+    </DataBase>
+    
+    <DataBase DBName="Loan" Env="ST192">
+        <URL>jdbc:oracle:thin:@10.30.84.13:1532:t12dspm</URL>
+        <UserName>dspmopr</UserName>
+        <Password>Ddfajk#124a</Password>
+        <DriverName>oracle.jdbc.driver.OracleDriver</DriverName>
+    </DataBase>
+    
+    <DataBase DBName="Loan" Env="UAT">
+        <URL>jdbc:oracle:thin:@10.30.84.147:1529:t3dspm</URL>
+        <UserName>dspmopr</UserName>
+        <Password>Dspmoprt3</Password>
+        <DriverName>oracle.jdbc.driver.OracleDriver</DriverName>
+    </DataBase>
+    
+    <DataBase DBName="Loan" Env="84-323">
+        <URL>jdbc:oracle:thin:@10.30.84.232:1529:t7dspm</URL>
+        <UserName>dspmopr</UserName>
+        <Password>Dadfa#1234kk</Password>
+        <DriverName>oracle.jdbc.driver.OracleDriver</DriverName>
+    </DataBase>
+</DataBases>

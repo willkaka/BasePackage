@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tables>
+    <!-- 指定显示数据表字段-->    
+    <Table TableName="user_tab_columns">
+        <!-- <Field name="ID">序号</Field> -->
+        <Field name="COLUMN_NAME">字段名</Field>
+        <Field name="DATA_TYPE">类型</Field>
+        <!-- <Field name="DATA_LENGTH">长度</Field>
+        <Field name="DATA_SCALE">小数位</Field> -->
+        <Field name="COMMENTS">注释</Field>
+    </Table>    
+    <Table TableName="user_col_comments">
+        <Field name="COMMENTS">注释</Field>
+    </Table>
+</Tables>

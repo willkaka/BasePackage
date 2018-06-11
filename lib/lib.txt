@@ -1,0 +1,4 @@
+dom4j-1.6.1
+jdom
+ojdbc14
+sqlite-jdbc-3.21.0

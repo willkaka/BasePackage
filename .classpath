@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.21.0.jar"/>
+	<classpathentry kind="lib" path="lib/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/ojdbc14.jar"/>
+	<classpathentry kind="lib" path="D:/Java/jar/poi-3.17.jar"/>
+	<classpathentry kind="lib" path="D:/Java/jar/poi-ooxml-3.17.jar"/>
+	<classpathentry kind="lib" path="D:/Java/jar/poi-examples-3.17.jar"/>
+	<classpathentry kind="lib" path="D:/Java/jar/poi-excelant-3.17.jar"/>
+	<classpathentry kind="lib" path="D:/Java/jar/poi-ooxml-schemas-3.17.jar"/>
+	<classpathentry kind="lib" path="D:/Java/jar/poi-scratchpad-3.17.jar"/>
+	<classpathentry kind="lib" path="D:/Java/jar/xmlbeans-2.3.0.jar"/>
+	<classpathentry kind="lib" path="D:/Java/jar/collections-generic-4.01-src.jar"/>
+	<classpathentry kind="lib" path="D:/Java/jar/commons-collections4-4.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

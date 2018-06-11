@@ -1,0 +1,11 @@
+insert into envdatabaseinfo (seq,envname,envdsc,ip,port,label,user,password) values(1,'DEV','DEV','10.1.105.157',1525,'d0dspm','dspmopr','Dsfzzxd10');
+insert into envdatabaseinfo (seq,envname,envdsc,ip,port,label,user,password) values(2,'ST41','ST41','10.1.105.158',1529,'t3dspm','dspmopr','Dsf##xd30');
+insert into envdatabaseinfo (seq,envname,envdsc,ip,port,label,user,password) values(3,'ST84','ST84','10.30.84.63',1533,'t13dspm','dspmopr','Fdajkjf12#13');
+insert into envdatabaseinfo (seq,envname,envdsc,ip,port,label,user,password) values(4,'ST106','ST106','10.30.84.181',1531,'t11dspm','dspmopr','Fdajk#1234a');
+insert into envdatabaseinfo (seq,envname,envdsc,ip,port,label,user,password) values(5,'ST192','ST192','10.30.84.13',1532,'t12dspm','dspmopr','Ddfajk#124a');
+insert into envdatabaseinfo (seq,envname,envdsc,ip,port,label,user,password) values(6,'UAT','UAT','10.30.84.147',1529,'t3dspm','dspmopr','Dspmoprt3');
+insert into envdatabaseinfo (seq,envname,envdsc,ip,port,label,user,password) values(7,'84-323','temp','10.30.84.232',1529,'t7dspm','dspmopr','Dadfa#1234kk');
+
+
+CREATE TABLE envdatabaseinfo (seq int,envname varchar(10),envdsc varchar(20),ip varchar(30),port int,
+label varchar(10),user varchar(20),password varchar(20));
