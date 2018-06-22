@@ -12,6 +12,7 @@ public class LayoutComp{
 	private float hPullingScale = 1; //拉伸比例
 	private int hgap = 10;  //水平间隔（与后一组件的间隔）默认为20 
 	private JComponent refComponent = null;
+	private LayoutByRow CompLayout = null;
 
 	public LayoutComp(){
 		
@@ -85,5 +86,14 @@ public class LayoutComp{
 
 	public void sethPullingScale(float hPullingScale) {
 		this.hPullingScale = hPullingScale;
+	}
+	
+
+	public LayoutByRow getCompLayout() {
+		return CompLayout;
+	}
+
+	public void setCompLayout(LayoutByRow compLayout) {
+		CompLayout = compLayout;
 	}
 }

@@ -92,6 +92,23 @@ public class LayoutByRow {
 		}
 	}
 	
+	
+	/**
+	 * 设置组件的布局
+	 * @param jComp
+	 * @param layoutByRow
+	 */
+	public void setCompLayout(JComponent jComp, LayoutByRow layoutByRow) {
+		for (int i = 1; i <= rowList.size(); i++) {
+			for (LayoutComp comp : rowList.get(i).getjComponentList()) {
+				if (comp.getComponent().equals(jComp)) {
+					comp.setCompLayout(layoutByRow);
+					break;
+				}
+			}
+		}
+	}
+	
 	/**
 	 * 配置行信息
 	 * @param rowNum行号
@@ -159,6 +176,12 @@ public class LayoutByRow {
 			height = ((JFrame) fatherJcomp).getHeight();
 		}
 		setRowPos(width, height);
+		
+		for (int i = 1; i <= rowList.size(); i++) {
+			for (LayoutComp comp : rowList.get(i).getjComponentList()) {
+				if(comp.getCompLayout() != null) comp.getCompLayout().setRowPos();  //递归
+			}
+		}
 	}
 	
 	/**

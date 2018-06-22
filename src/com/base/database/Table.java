@@ -607,7 +607,7 @@ public class Table {
 		Vector<TableField> fields = new Vector<TableField>();
 		String sqlStm = "select a.Column_Name,a.Data_Type,a.Data_Length,a.Data_Precision,a.Data_Scale,a.Nullable,a.Column_id,b.Comments "
 			+ "from user_tab_columns a,user_col_comments b where a.table_name =UPPER('" + tableName 
-			+ "') and a.Table_Name = b.Table_Name and a.Column_Name = b.Column_Name OREDER by a.Column_ID";
+			+ "') and a.Table_Name = b.Table_Name and a.Column_Name = b.Column_Name ORDER by a.Column_ID";
 		
 		PreparedStatement preparedStatement = Conn.prepareStatement(sqlStm);
 		ResultSet rs = preparedStatement.executeQuery();

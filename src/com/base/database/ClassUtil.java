@@ -5,10 +5,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
@@ -178,6 +183,23 @@ public class ClassUtil {
         return result;
     }
     
+    public static Vector<String> getMethodParms(String classname, String methodname, Connection connection){
+    	Vector<String> parms = new Vector<String>();
+    	PreparedStatement pSql0;
+		try {
+			String sqlm = "select parmclass from classmethodparms where classname = '" + 
+					classname +"' and methodname = '" + methodname + "' ORDER BY parmseq";
+			//System.out.println("[sql]"+sqlm);
+			pSql0 = connection.prepareStatement(sqlm);
+		ResultSet set0 = pSql0.executeQuery();
+		while (set0.next()) {
+			parms.add(set0.getString("parmclass"));
+		}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return parms;
+    }
     
     public static void main(String args[]){
         StringBuilder sb = new StringBuilder();
