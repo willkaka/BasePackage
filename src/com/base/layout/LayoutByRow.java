@@ -8,6 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import com.base.comp.JClosableTabbedPane;
+
 /**
  * 按行布局
  * 先将所有组件add进布局，最后再setRowPos设置组件位置(setBounds)
@@ -218,6 +220,7 @@ public class LayoutByRow {
 			
 			//遍历行组件，设置组件Y坐标，加载组件
 			for (LayoutComp comp : layoutRow.getjComponentList()) {
+				
 				//组件的Y轴坐标，在此处计算，其它不变。
 				comp.getComponent().setBounds(
 						comp.getComponent().getX(), 
@@ -226,8 +229,13 @@ public class LayoutByRow {
 						comp.getComponent().getHeight());
 				
 				//将组件加载到父容器组件中
-				if(getFatherObjectType().equals("JComponent")){
+				//if(getFatherJcomp().getClass().getName().equals("com.base.comp.JClosableTabbedPane") ) continue;
+				if(getFatherObjectType().equals("JComponent")  &&
+						!getFatherJcomp().getClass().getName().equals("com.base.comp.JClosableTabbedPane")){
 					((JComponent) fatherJcomp).add(comp.getComponent());
+				}else if(getFatherObjectType().equals("JComponent")  &&
+						getFatherJcomp().getClass().getName().equals("com.base.comp.JClosableTabbedPane")){
+					((JClosableTabbedPane) fatherJcomp).addTab("1", comp.getComponent());
 				}else if(getFatherObjectType().equals("JFrame")){
 					((JFrame) fatherJcomp).add(comp.getComponent());
 				}else{
