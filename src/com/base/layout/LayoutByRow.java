@@ -25,7 +25,12 @@ public class LayoutByRow {
 	public LayoutByRow(JComponent fatherJcomp){
 		this.setFatherObjectType("JComponent");
 		this.setFatherJcomp(fatherJcomp);
-		fatherJcomp.setLayout(null);
+		if(fatherJcomp.getClass().getName().equals("com.base.comp.JClosableTabbedPane")){
+			
+		}else{
+			fatherJcomp.setLayout(null);
+		}
+		
 	}
 	
 	public LayoutByRow(JFrame fatherJcomp){
@@ -105,6 +110,38 @@ public class LayoutByRow {
 			for (LayoutComp comp : rowList.get(i).getjComponentList()) {
 				if (comp.getComponent().equals(jComp)) {
 					comp.setCompLayout(layoutByRow);
+					break;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 设置组件的附加信息
+	 * @param jComp
+	 * @param layoutByRow
+	 */
+	public void setCompOthInfo(JComponent jComp, String info) {
+		for (int i = 1; i <= rowList.size(); i++) {
+			for (LayoutComp comp : rowList.get(i).getjComponentList()) {
+				if (comp.getComponent().equals(jComp)) {
+					comp.setCompOthInfo(info);
+					break;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 从布局中移除组件
+	 * @param jComp
+	 * @param layoutByRow
+	 */
+	public void removeComp(JComponent jComp) {
+		for (int i = 1; i <= rowList.size(); i++) {
+			for (LayoutComp comp : rowList.get(i).getjComponentList()) {
+				if (comp.getComponent().equals(jComp)) {
+					rowList.get(i).getjComponentList().remove(jComp);
 					break;
 				}
 			}
@@ -220,7 +257,7 @@ public class LayoutByRow {
 			
 			//遍历行组件，设置组件Y坐标，加载组件
 			for (LayoutComp comp : layoutRow.getjComponentList()) {
-				
+				//if(getFatherJcomp().getClass().getName().equals("com.base.comp.JClosableTabbedPane")) return;
 				//组件的Y轴坐标，在此处计算，其它不变。
 				comp.getComponent().setBounds(
 						comp.getComponent().getX(), 
@@ -235,7 +272,8 @@ public class LayoutByRow {
 					((JComponent) fatherJcomp).add(comp.getComponent());
 				}else if(getFatherObjectType().equals("JComponent")  &&
 						getFatherJcomp().getClass().getName().equals("com.base.comp.JClosableTabbedPane")){
-					((JClosableTabbedPane) fatherJcomp).addTab("1", comp.getComponent());
+					//将TAB名称保存在CompOthInfo中
+					//((JClosableTabbedPane) fatherJcomp).addTab(comp.getCompOthInfo(), comp.getComponent());
 				}else if(getFatherObjectType().equals("JFrame")){
 					((JFrame) fatherJcomp).add(comp.getComponent());
 				}else{

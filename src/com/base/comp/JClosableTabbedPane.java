@@ -1,6 +1,9 @@
 package com.base.comp;
 
 import javax.swing.*;
+
+import com.base.layout.LayoutByRow;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
@@ -23,7 +26,7 @@ public class JClosableTabbedPane extends JTabbedPane implements MouseListener {
     public void addTab(String title, Component component) {
         this.addTab(title, component, null);
     }
-    public void addTab(String title, Component component, Icon extraIcon) {
+	public void addTab(String title, Component component, Icon extraIcon) {
         super.addTab(title, new CloseTabIcon(extraIcon), component);
     }
     public void insertTab(String title, Icon icon, Component component, String tip, int index) {
@@ -132,10 +135,10 @@ class CloseTabIcon implements Icon {
         Color col = g.getColor();
         g.setColor(Color.black);
         int y_p = y + 2;
-        g.drawLine(x + 1, y_p, x + 12, y_p);
-        g.drawLine(x + 1, y_p + 13, x + 12, y_p + 13);
-        g.drawLine(x, y_p + 1, x, y_p + 12);
-        g.drawLine(x + 13, y_p + 1, x + 13, y_p + 12);
+        //g.drawLine(x + 1, y_p, x + 12, y_p);
+        //g.drawLine(x + 1, y_p + 13, x + 12, y_p + 13);
+        //g.drawLine(x, y_p + 1, x, y_p + 12);
+        //g.drawLine(x + 13, y_p + 1, x + 13, y_p + 12);
         g.drawLine(x + 3, y_p + 3, x + 10, y_p + 10);
         g.drawLine(x + 3, y_p + 4, x + 9, y_p + 10);
         g.drawLine(x + 4, y_p + 3, x + 10, y_p + 9);

@@ -13,6 +13,7 @@ public class LayoutComp{
 	private int hgap = 10;  //水平间隔（与后一组件的间隔）默认为20 
 	private JComponent refComponent = null;
 	private LayoutByRow CompLayout = null;
+	private String CompOthInfo = "";
 
 	public LayoutComp(){
 		
@@ -22,6 +23,14 @@ public class LayoutComp{
 		this.component = component;
 	}
 	
+	public String getCompOthInfo() {
+		return CompOthInfo;
+	}
+
+	public void setCompOthInfo(String compOthInfo) {
+		CompOthInfo = compOthInfo;
+	}
+
 	public int getHgap() {
 		return hgap;
 	}
