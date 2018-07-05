@@ -20,12 +20,15 @@ public class LayoutByRow {
 	private String fatherObjectType = null;
 	private HashMap<Integer, LayoutRow> rowList = new HashMap<Integer, LayoutRow>();
 	private int topGap = 10;   //顶部保留间隔
-	private int botGap = 10 + 40;   //底部保留间隔  40为JFrame的标题栏高度。
+	//private int botGap = 10 + 40;   //底部保留间隔  40为JFrame的标题栏高度。
+	private int botGap = 20;   //底部保留间隔  40为JFrame的标题栏高度。
+	private boolean resetPos = true; //是否由LayoutByRow设置位置及大小
 
 	public LayoutByRow(JComponent fatherJcomp){
 		this.setFatherObjectType("JComponent");
 		this.setFatherJcomp(fatherJcomp);
-		if(fatherJcomp.getClass().getName().equals("com.base.comp.JClosableTabbedPane")){
+		if(fatherJcomp.getClass().getName().equals("com.base.comp.JClosableTabbedPane") ||
+		   fatherJcomp.getClass().getName().equals("javax.swing.JScrollPane")){
 			
 		}else{
 			fatherJcomp.setLayout(null);
@@ -149,6 +152,20 @@ public class LayoutByRow {
 	}
 	
 	/**
+	 * 从布局中移除所有组件
+	 * @param jComp
+	 * @param layoutByRow
+	 */
+	public void removeAllComp() {
+		for (int i = 1; i <= rowList.size(); i++) {
+			for (LayoutComp comp : rowList.get(i).getjComponentList()) {
+				comp = null;
+			}
+		}
+		rowList.clear();
+	}
+	
+	/**
 	 * 配置行信息
 	 * @param rowNum行号
 	 * @param rowheight行高
@@ -214,11 +231,21 @@ public class LayoutByRow {
 			width = ((JFrame) fatherJcomp).getWidth();
 			height = ((JFrame) fatherJcomp).getHeight();
 		}
-		setRowPos(width, height);
+		
+		if(isResetPos()) setRowPos(width, height);
 		
 		for (int i = 1; i <= rowList.size(); i++) {
 			for (LayoutComp comp : rowList.get(i).getjComponentList()) {
 				if(comp.getCompLayout() != null) comp.getCompLayout().setRowPos();  //递归
+			}
+		}
+		
+		if(isResetPos()){
+			if(this.getFatherObjectType().equals("JComponent")){
+				((JComponent) fatherJcomp).revalidate();
+				((JComponent) fatherJcomp).repaint();
+			}else if(this.getFatherObjectType().equals("JFrame")){
+				((JFrame) fatherJcomp).repaint();
 			}
 		}
 	}
@@ -416,6 +443,14 @@ public class LayoutByRow {
 
 	public void setBotGap(int botGap) {
 		this.botGap = botGap;
+	}
+
+	public boolean isResetPos() {
+		return resetPos;
+	}
+
+	public void setResetPos(boolean resetPos) {
+		this.resetPos = resetPos;
 	}
 
 }
