@@ -1,5 +1,6 @@
 package com.base.layout;
 
+import java.awt.Component;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -7,6 +8,8 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import org.apache.poi.sl.draw.geom.ArcToCommand;
 
 import com.base.comp.JClosableTabbedPane;
 
@@ -141,12 +144,32 @@ public class LayoutByRow {
 	 * @param layoutByRow
 	 */
 	public void removeComp(JComponent jComp) {
-		for (int i = 1; i <= rowList.size(); i++) {
+		//从父容器中删除组件
+		if(this.getFatherObjectType().equals("JComponent")){
+			((JComponent) fatherJcomp).remove(jComp);
+		}else if(this.getFatherObjectType().equals("JFrame")){
+			((JFrame) fatherJcomp).remove(jComp);
+		}
+		//从布局中删除组件
+		int rowCount = rowList.size();
+		int rownum = 0;
+		for (int i = 1; i <= rowCount; i++) {
 			for (LayoutComp comp : rowList.get(i).getjComponentList()) {
 				if (comp.getComponent().equals(jComp)) {
-					rowList.get(i).getjComponentList().remove(jComp);
-					break;
+					rowList.get(i).getjComponentList().remove(comp);
+					if(rowList.get(i).getjComponentList().size() == 0){
+						rowList.remove(i);
+						rownum = i;
+						break;
+					}
 				}
+			}
+		}
+		for (int i = 1; i <= rowCount; i++) {
+			if(rowList.get(i) == null && rowList.get(i+1) != null){
+				rowList.get(i+1).setRowNum(i);
+				rowList.put(i, rowList.get(i+1));
+				rowList.remove(i+1);
 			}
 		}
 	}
@@ -157,6 +180,15 @@ public class LayoutByRow {
 	 * @param layoutByRow
 	 */
 	public void removeAllComp() {
+		
+		//从父容器中删除组件
+		if(this.getFatherObjectType().equals("JComponent")){
+			((JComponent) fatherJcomp).removeAll();;
+		}else if(this.getFatherObjectType().equals("JFrame")){
+			((JFrame) fatherJcomp).removeAll();
+		}
+		
+		//从布局中删除组件
 		for (int i = 1; i <= rowList.size(); i++) {
 			for (LayoutComp comp : rowList.get(i).getjComponentList()) {
 				comp = null;
@@ -232,7 +264,8 @@ public class LayoutByRow {
 			height = ((JFrame) fatherJcomp).getHeight();
 		}
 		
-		if(isResetPos()) setRowPos(width, height);
+		//if(isResetPos()) 
+			setRowPos(width, height);
 		
 		for (int i = 1; i <= rowList.size(); i++) {
 			for (LayoutComp comp : rowList.get(i).getjComponentList()) {
@@ -240,13 +273,13 @@ public class LayoutByRow {
 			}
 		}
 		
-		if(isResetPos()){
+		//if(isResetPos()){
 			if(this.getFatherObjectType().equals("JComponent")){
 				((JComponent) fatherJcomp).revalidate();
 				((JComponent) fatherJcomp).repaint();
 			}else if(this.getFatherObjectType().equals("JFrame")){
 				((JFrame) fatherJcomp).repaint();
-			}
+		//	}
 		}
 	}
 	
@@ -295,10 +328,12 @@ public class LayoutByRow {
 				//将组件加载到父容器组件中
 				//if(getFatherJcomp().getClass().getName().equals("com.base.comp.JClosableTabbedPane") ) continue;
 				if(getFatherObjectType().equals("JComponent")  &&
-						!getFatherJcomp().getClass().getName().equals("com.base.comp.JClosableTabbedPane")){
+						!getFatherJcomp().getClass().getName().equals("com.base.comp.JClosableTabbedPane") &&
+						!getFatherJcomp().getClass().getName().equals("javax.swing.JScrollPane")){
 					((JComponent) fatherJcomp).add(comp.getComponent());
 				}else if(getFatherObjectType().equals("JComponent")  &&
-						getFatherJcomp().getClass().getName().equals("com.base.comp.JClosableTabbedPane")){
+						(getFatherJcomp().getClass().getName().equals("com.base.comp.JClosableTabbedPane") ||
+						getFatherJcomp().getClass().getName().equals("javax.swing.JScrollPane"))){
 					//将TAB名称保存在CompOthInfo中
 					//((JClosableTabbedPane) fatherJcomp).addTab(comp.getCompOthInfo(), comp.getComponent());
 				}else if(getFatherObjectType().equals("JFrame")){
@@ -306,13 +341,14 @@ public class LayoutByRow {
 				}else{
 					System.out.println("=================error!!!!!!!!!!!!!!!!!!!!!");
 				}
-				System.out.println("y="+comp.getComponent().getY()+"\t "+
+				
+				/*System.out.println("y="+comp.getComponent().getY()+"\t "+
 								   "x="+comp.getComponent().getX()+"\t "+
 								   "w="+comp.getComponent().getWidth()+"\t "+
 								   "h="+comp.getComponent().getHeight()+"\t "+
 								   "  "+comp.getComponent().getClass() + " "+
 								   "  "+getFatherJcomp().getClass()
-										);
+										);*/
 			}
 			rowY = rowY + layoutRow.getRowHeight() + layoutRow.getRowVGap();
 		}
