@@ -43,7 +43,7 @@ public class JTablePanel extends JPanel{
 	//表格panel及布局
 	//public JPanel tablePanel = new JPanel();
 	public LayoutByRow panelLayout = new LayoutByRow(this);
-	
+
 	//翻页按钮
 	public JButton fstPageButton = new JButton();
 	public JButton prePageButton = new JButton();
@@ -81,7 +81,7 @@ public class JTablePanel extends JPanel{
 		
 		this.setBounds(1, 1, 500, 500);
 		//表格翻页按扭：首页/上一页/下一页/尾页
-		panelLayout.setRowInfo(1, 30, 5, 0);
+		panelLayout.setRowInfo(1, 20, 5, 0);
 		
 		fstPageButton.setFont(new Font("宋体", Font.BOLD, 10));
 		fstPageButton.setName("fstPageButton");
@@ -363,5 +363,10 @@ public class JTablePanel extends JPanel{
 		for (int i = 0; i < colCount; i++) {
 			myTable.getColumn(myTable.getColumnName(i)).setCellRenderer(tcr);
 		}
+	}
+	
+	
+	public LayoutByRow getPanelLayout() {
+		return panelLayout;
 	}
 }

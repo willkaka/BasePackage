@@ -641,7 +641,11 @@ public class Table {
 			field.setFieldName(rs.getString("name"));
 			String typeString = rs.getString("type");
 			
-			field.setFieldType(typeString.substring(0, typeString.indexOf('(')));
+			if(typeString.indexOf('(') > 0){
+				field.setFieldType(typeString.substring(0, typeString.indexOf('(')));
+			}else{
+				field.setFieldType(typeString);
+			}
 			
 			String lengString = "0";
 			String decString = "0";
@@ -649,7 +653,9 @@ public class Table {
 				lengString = typeString.substring(typeString.indexOf('(')+1,typeString.indexOf(','));
 				decString = typeString.substring(typeString.indexOf(',')+1,typeString.indexOf(')'));
 			}else{
-				lengString = typeString.substring(typeString.indexOf('(')+1,typeString.indexOf(')'));
+				if(typeString.indexOf('(')>0){
+					lengString = typeString.substring(typeString.indexOf('(')+1,typeString.indexOf(')'));
+				}
 			}
 			field.setFieldLen(Integer.parseInt(lengString));
 			field.setFieldDec(Integer.parseInt(decString));

@@ -392,7 +392,7 @@ public class GenDatabaseTableEntity {
     public static void main(String[] args){
     	
     	//数据库连接
-    	OracleDB oracleDB = new OracleDB("DEV");
+    	OracleDB oracleDB = new OracleDB(OracleDB.databaseInfo);
     	Connection connection = oracleDB.getConnection();
     	
     	try {

@@ -25,7 +25,7 @@ public class LayoutByRow {
 	private int topGap = 10;   //顶部保留间隔
 	//private int botGap = 10 + 40;   //底部保留间隔  40为JFrame的标题栏高度。
 	private int botGap = 20;   //底部保留间隔  40为JFrame的标题栏高度。
-	private boolean resetPos = true; //是否由LayoutByRow设置位置及大小
+	//private boolean resetPos = true; //是否由LayoutByRow设置位置及大小
 
 	public LayoutByRow(JComponent fatherJcomp){
 		this.setFatherObjectType("JComponent");
@@ -481,12 +481,12 @@ public class LayoutByRow {
 		this.botGap = botGap;
 	}
 
-	public boolean isResetPos() {
+/*	public boolean isResetPos() {
 		return resetPos;
 	}
 
 	public void setResetPos(boolean resetPos) {
 		this.resetPos = resetPos;
-	}
+	}*/
 
 }
