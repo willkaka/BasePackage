@@ -270,6 +270,7 @@ public class JTablePanel extends JPanel{
 	         selectedRowNum = table.rowAtPoint(evt.getPoint());
 	         selectedColNum = table.columnAtPoint(evt.getPoint());
 	         for (int i=0; i<table.getColumnCount(); i++){
+	        	 System.out.println(table.getValueAt(selectedRowNum, i));
 	        	 selectRowValue.addElement(table.getValueAt(selectedRowNum, i));
 	         }
 	         //System.out.println("selected:row="+selectedRowNum + " col="+selectedColNum + " value:"+selectedCellValue);

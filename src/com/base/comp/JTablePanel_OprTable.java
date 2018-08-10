@@ -428,6 +428,8 @@ public class JTablePanel_OprTable {
 			returnValue = value;
 		}else if(type.equals("DOUBLE")){
 			returnValue = value;
+		}else if(type.equals("INT")){
+			returnValue = value;
 		}else if(type.equals("FLOAT")){
 			if(dec == 0 & value.trim().indexOf('.')>0){
 				returnValue = value.trim().substring(0,value.trim().indexOf('.'));

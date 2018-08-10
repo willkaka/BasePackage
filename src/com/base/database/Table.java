@@ -1,6 +1,7 @@
 package com.base.database;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -19,6 +20,8 @@ import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
+
+import org.apache.commons.beanutils.ConvertUtils;
 
 import java.util.Vector;
 
@@ -201,89 +204,15 @@ public class Table {
 			
 			tableClass = Class.forName(className);
 			tableObject = tableClass.newInstance();
+			tableObject = Table.parseResultSet(rs, tableObject);
 			
-			ResultSetMetaData metaData = rs.getMetaData();
+			/*ResultSetMetaData metaData = rs.getMetaData();
 			for (int fieldNum = 1; fieldNum <= metaData.getColumnCount(); fieldNum++){
 				if(metaData.getColumnName(fieldNum) != null && !"".equals(metaData.getColumnName(fieldNum))){
 					String fieldName = metaData.getColumnName(fieldNum);
 					int fieldType = metaData.getColumnType(fieldNum);
-					Object fieldValue = null;
-					if(fieldType == java.sql.Types.ARRAY){
-						fieldValue = rs.getArray(fieldName);
-					}else if(fieldType == java.sql.Types.BIGINT){
-						fieldValue = rs.getInt(fieldName);
-					}else if(fieldType == java.sql.Types.BINARY){
-						fieldValue = rs.getBinaryStream(fieldName);								
-					}else if(fieldType == java.sql.Types.BIT){
-						fieldValue = rs.getByte(fieldName);
-					}else if(fieldType == java.sql.Types.BLOB){
-						fieldValue = rs.getBlob(fieldName);
-					}else if(fieldType == java.sql.Types.BOOLEAN){
-						fieldValue = rs.getBoolean(fieldName);
-					}else if(fieldType == java.sql.Types.CHAR){
-						fieldValue = rs.getCharacterStream(fieldName);
-					}else if(fieldType == java.sql.Types.CLOB){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.DATALINK){
-						fieldValue = rs.getDate(fieldName);
-					}else if(fieldType == java.sql.Types.DATE){
-						fieldValue = rs.getDate(fieldName);
-					}else if(fieldType == java.sql.Types.DECIMAL){
-						fieldValue = rs.getFloat(fieldName);
-					}else if(fieldType == java.sql.Types.DISTINCT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.DOUBLE){
-						fieldValue = rs.getDouble(fieldName);
-					}else if(fieldType == java.sql.Types.FLOAT){
-						fieldValue = rs.getFloat(fieldName);
-					}else if(fieldType == java.sql.Types.INTEGER){
-						fieldValue = rs.getInt(fieldName);
-					}else if(fieldType == java.sql.Types.JAVA_OBJECT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.LONGNVARCHAR){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.LONGVARBINARY){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.LONGVARCHAR){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.NCHAR){
-						fieldValue = rs.getNCharacterStream(fieldName);
-					}else if(fieldType == java.sql.Types.NCLOB){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.NULL){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.NUMERIC){
-						fieldValue = rs.getDouble(fieldName);
-					}else if(fieldType == java.sql.Types.NVARCHAR){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.OTHER){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.REAL){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.REF){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.ROWID){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.SMALLINT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.SQLXML){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.STRUCT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.TIME){
-						fieldValue = rs.getTime(fieldName);
-					}else if(fieldType == java.sql.Types.TIMESTAMP){
-						fieldValue = rs.getTimestamp(fieldName);
-					}else if(fieldType == java.sql.Types.TINYINT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.VARBINARY){
-						fieldValue = rs.getBinaryStream(fieldName);
-					}else if(fieldType == java.sql.Types.VARCHAR){
-						fieldValue = rs.getString(fieldName);
-					}else {
-						//数据类型未知
-					}
-					
+					Object fieldValue = rs.getObject(fieldName);
+										
 					//找到字段set方法，并调用赋值。
 					Method[] methods = tableClass.getMethods();
 					for(Method method:methods){
@@ -292,7 +221,7 @@ public class Table {
 						}
 					}				
 				}
-			}
+			}*/
 		}
 		rs.close();
 		return tableObject;
@@ -331,83 +260,7 @@ public class Table {
 				if(metaData.getColumnName(fieldNum) != null && !"".equals(metaData.getColumnName(fieldNum))){
 					String fieldName = metaData.getColumnName(fieldNum);
 					int fieldType = metaData.getColumnType(fieldNum);
-					Object fieldValue = null;
-					if(fieldType == java.sql.Types.VARCHAR){
-					fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.ARRAY){
-						fieldValue = rs.getArray(fieldName);
-					}else if(fieldType == java.sql.Types.BIGINT){
-						fieldValue = rs.getInt(fieldName);
-					}else if(fieldType == java.sql.Types.BINARY){
-						fieldValue = rs.getBinaryStream(fieldName);								
-					}else if(fieldType == java.sql.Types.BIT){
-						fieldValue = rs.getByte(fieldName);
-					}else if(fieldType == java.sql.Types.BLOB){
-						fieldValue = rs.getBlob(fieldName);
-					}else if(fieldType == java.sql.Types.BOOLEAN){
-						fieldValue = rs.getBoolean(fieldName);
-					}else if(fieldType == java.sql.Types.CHAR){
-						fieldValue = rs.getCharacterStream(fieldName);
-					}else if(fieldType == java.sql.Types.CLOB){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.DATALINK){
-						fieldValue = rs.getDate(fieldName);
-					}else if(fieldType == java.sql.Types.DATE){
-						fieldValue = rs.getDate(fieldName);
-					}else if(fieldType == java.sql.Types.DECIMAL){
-						fieldValue = rs.getFloat(fieldName);
-					}else if(fieldType == java.sql.Types.DISTINCT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.DOUBLE){
-						fieldValue = rs.getDouble(fieldName);
-					}else if(fieldType == java.sql.Types.FLOAT){
-						fieldValue = rs.getFloat(fieldName);
-					}else if(fieldType == java.sql.Types.INTEGER){
-						fieldValue = rs.getInt(fieldName);
-					}else if(fieldType == java.sql.Types.JAVA_OBJECT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.LONGNVARCHAR){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.LONGVARBINARY){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.LONGVARCHAR){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.NCHAR){
-						fieldValue = rs.getNCharacterStream(fieldName);
-					}else if(fieldType == java.sql.Types.NCLOB){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.NULL){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.NUMERIC){
-						fieldValue = rs.getDouble(fieldName);
-					}else if(fieldType == java.sql.Types.NVARCHAR){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.OTHER){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.REAL){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.REF){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.ROWID){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.SMALLINT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.SQLXML){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.STRUCT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.TIME){
-						fieldValue = rs.getTime(fieldName);
-					}else if(fieldType == java.sql.Types.TIMESTAMP){
-						fieldValue = rs.getTimestamp(fieldName);
-					}else if(fieldType == java.sql.Types.TINYINT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.VARBINARY){
-						fieldValue = rs.getBinaryStream(fieldName);
-					}else {
-						//数据类型未知
-						System.out.println("数据字段类型未知，类型："+fieldType);
-					}
+					Object fieldValue = rs.getObject(fieldName);
 					
 					//找到字段set方法，并调用赋值。
 					if(fieldValue == null){
@@ -454,89 +307,14 @@ public class Table {
 			
 			tableClass = Class.forName(className);
 			Object tableObject = tableClass.newInstance();
+			tableObject = Table.parseResultSet(rs, tableObject);
 			
-			ResultSetMetaData metaData = rs.getMetaData();
+		/*	ResultSetMetaData metaData = rs.getMetaData();
 			for (int fieldNum = 1; fieldNum <= metaData.getColumnCount(); fieldNum++){
 				if(metaData.getColumnName(fieldNum) != null && !"".equals(metaData.getColumnName(fieldNum))){
 					String fieldName = metaData.getColumnName(fieldNum);
 					int fieldType = metaData.getColumnType(fieldNum);
-					Object fieldValue = null;
-					if(fieldType == java.sql.Types.VARCHAR){
-					fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.ARRAY){
-						fieldValue = rs.getArray(fieldName);
-					}else if(fieldType == java.sql.Types.BIGINT){
-						fieldValue = rs.getInt(fieldName);
-					}else if(fieldType == java.sql.Types.BINARY){
-						fieldValue = rs.getBinaryStream(fieldName);								
-					}else if(fieldType == java.sql.Types.BIT){
-						fieldValue = rs.getByte(fieldName);
-					}else if(fieldType == java.sql.Types.BLOB){
-						fieldValue = rs.getBlob(fieldName);
-					}else if(fieldType == java.sql.Types.BOOLEAN){
-						fieldValue = rs.getBoolean(fieldName);
-					}else if(fieldType == java.sql.Types.CHAR){
-						fieldValue = rs.getCharacterStream(fieldName);
-					}else if(fieldType == java.sql.Types.CLOB){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.DATALINK){
-						fieldValue = rs.getDate(fieldName);
-					}else if(fieldType == java.sql.Types.DATE){
-						fieldValue = rs.getDate(fieldName);
-					}else if(fieldType == java.sql.Types.DECIMAL){
-						fieldValue = rs.getFloat(fieldName);
-					}else if(fieldType == java.sql.Types.DISTINCT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.DOUBLE){
-						fieldValue = rs.getDouble(fieldName);
-					}else if(fieldType == java.sql.Types.FLOAT){
-						fieldValue = rs.getFloat(fieldName);
-					}else if(fieldType == java.sql.Types.INTEGER){
-						fieldValue = rs.getInt(fieldName);
-					}else if(fieldType == java.sql.Types.JAVA_OBJECT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.LONGNVARCHAR){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.LONGVARBINARY){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.LONGVARCHAR){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.NCHAR){
-						fieldValue = rs.getNCharacterStream(fieldName);
-					}else if(fieldType == java.sql.Types.NCLOB){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.NULL){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.NUMERIC){
-						fieldValue = rs.getDouble(fieldName);
-					}else if(fieldType == java.sql.Types.NVARCHAR){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.OTHER){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.REAL){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.REF){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.ROWID){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.SMALLINT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.SQLXML){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.STRUCT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.TIME){
-						fieldValue = rs.getTime(fieldName);
-					}else if(fieldType == java.sql.Types.TIMESTAMP){
-						fieldValue = rs.getTimestamp(fieldName);
-					}else if(fieldType == java.sql.Types.TINYINT){
-						fieldValue = rs.getString(fieldName);
-					}else if(fieldType == java.sql.Types.VARBINARY){
-						fieldValue = rs.getBinaryStream(fieldName);
-					}else {
-						//数据类型未知
-						System.out.println("数据字段类型未知，类型："+fieldType);
-					}
+					Object fieldValue = rs.getObject(fieldName);
 					
 					//找到字段set方法，并调用赋值。
 					Method[] methods = tableClass.getMethods();
@@ -546,7 +324,7 @@ public class Table {
 						}
 					}				
 				}
-			}
+			}*/
 			tableObjects.add(tableObject);
 		}
 		rs.close();
@@ -672,6 +450,13 @@ public class Table {
 		return fields;
 	}
 	
+	/**
+	 * 取指定数据表字段的描述
+	 * @param tableName
+	 * @param fieldName
+	 * @param connection
+	 * @return
+	 */
 	public static String getTableFieldComments(String tableName, String fieldName,Connection connection){
 		String comments = "";
 		String sqlStm = "select comments from user_col_comments where table_name = '"+tableName+"' and column_name ='"+fieldName+"'";
@@ -688,7 +473,12 @@ public class Table {
 		return comments;
 	}
 	
-	
+	/**
+	 * 判断数据表是否存在
+	 * @param tableName
+	 * @param connection
+	 * @return true存在 false不存在
+	 */
 	public static boolean isExist(String tableName,Connection connection){
 		String sqlStm = "select 1 from "+tableName;
 		
@@ -702,6 +492,37 @@ public class Table {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * 将ResultSet数据自动填充到类对象中
+	 * @param rs
+	 * @param entry
+	 * @return
+	 * @throws Exception
+	 */
+	public static <T> T parseResultSet(ResultSet rs, T entry) throws Exception{
+		if(rs != null){	
+            //获取类中所有的属性
+            Field[] arrf=entry.getClass().getDeclaredFields();
+            //遍历属性
+            for(Field f:arrf){
+                //设置忽略访问校验
+                f.setAccessible(true);
+                
+                //检查数据列是否存在
+                try{
+                	rs.findColumn(f.getName());
+                }catch (SQLException e) {
+					//不存在该列，则跳过
+                	continue;
+				}
+                
+            	//为属性设置内容，使用ConvertUtils强转数据类型
+                f.set(entry, ConvertUtils.convert(rs.getObject(f.getName()), f.getType()));
+            }
+		}
+		return entry;
 	}
 	
 	public int getSeq() {

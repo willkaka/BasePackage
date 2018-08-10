@@ -76,7 +76,57 @@ public class GenDatabaseTableEntity {
     	this.packageOutPath = packagePath;
     	getTableInfo(tableName);
     }
+    
+    public GenDatabaseTableEntity(Connection con, String tableName) {
+    	StringBuffer javasrc = null;
+    	this.con = con;
+    	this.tableName = tableName;
+    }
+
+    /**
+     * 获取单个数据库表信息
+     */
+    public StringBuffer getTableInfo2() {
+        int size = 0;
+        String sql = "SELECT * FROM " + tableName;
+        try {
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            rs = preparedStatement.executeQuery();
+            rsmd = rs.getMetaData();
+            size = rsmd.getColumnCount();
+            colnames = new String[size];
+            colTypes = new String[size];
+            colSizes = new int[size];
+            for (int i = 0; i < size; i++) {
+                colnames[i] = rsmd.getColumnName(i + 1);
+                colTypes[i] = rsmd.getColumnTypeName(i + 1);
  
+                if (colTypes[i].equalsIgnoreCase("date")
+                        || colTypes[i].equalsIgnoreCase("timestamp")) {
+                    f_util = true;
+                }
+                if (colTypes[i].equalsIgnoreCase("blob")
+                        || colTypes[i].equalsIgnoreCase("char")) {
+                    f_sql = true;
+                }
+                colSizes[i] = rsmd.getColumnDisplaySize(i + 1);
+            }
+            //规范化表名
+            String normTableName = normTableName(tableName);
+            //获取单张数据库表注释
+            String tableComment = getTableComment(tableName);
+            //获取单张数据库表的所有列信息
+            StringBuffer tempSb = getColsInfo(tableName);
+            //生成JavaBean文件
+            return getSb(normTableName, tableComment, tempSb);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+			e.printStackTrace();
+		}
+        return null;
+    }
+    
     /**
      * 获取单个数据库表信息
      */
