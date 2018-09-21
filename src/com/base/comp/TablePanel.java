@@ -1,42 +1,36 @@
 package com.base.comp;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
-import java.awt.KeyboardFocusManager;
-import java.awt.Rectangle;
-import java.awt.TexturePaint;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.security.PublicKey;
+import java.sql.Connection;
+import java.util.Enumeration;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.JButton;
-import javax.swing.JMenuItem;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.RowFilter;
 import javax.swing.UIManager;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import org.apache.poi.openxml4j.util.ZipSecureFile.ThresholdInputStream;
-
+import com.base.database.SqliteDB;
+import com.base.database.Table;
 import com.base.layout.LayoutByRow;
-import com.tablequery.bean.TableField;
-import com.tablequery.function.PrcString;
-import com.tablequery.function.QueryTableInfo;
-import com.tablequery.sqlparser.SqlStatementParser;
-import com.tablequery.view.MntTableWindow;
-import com.tablequery.sqlparser.SqlStatementParser;
 
 public class TablePanel extends JPanel{
 	
@@ -46,6 +40,9 @@ public class TablePanel extends JPanel{
 	private JButton prePageBtn = new JButton();
 	private JButton nxtPageBtn = new JButton();
 	private JButton lstPageBtn = new JButton();
+	
+	private JTextField filterStrTextField = new JTextField();
+	private JLabel promptLabel = new JLabel("提示信息");
 	
 	private JTable jTable = new JTable();
 	
@@ -66,20 +63,23 @@ public class TablePanel extends JPanel{
 		jTable.setAutoscrolls(true);
 		jTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		jTable.setFont(new Font("SimSun", 0, 12));
-                
+		
+		tPanelLayout.add(fstPageBtn, 1, 30, 'N', 0, 0, 'L');
+		tPanelLayout.add(prePageBtn, 1, 30, 'N', 0, 0, 'L');
+		tPanelLayout.add(nxtPageBtn, 1, 30, 'N', 0, 0, 'L');
+		tPanelLayout.add(lstPageBtn, 1, 30, 'N', 0, 0, 'L');
+		
+		tPanelLayout.add(filterStrTextField, 1, 50, 'N', 0, 0, 'R');
+		
         //将数据放进table中
-        setFieldInfoTableDataFromQuery(table,frame.getSelectedModel(),frame.getSqlstm(),frame.getBegRow(),frame.getEndRow());
+        setFieldInfoTableDataFromQuery(rows, cols);
         
         //监听鼠标
         this.addMouseListener(new MouseAdapter() {
         	public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-				//System.out.println(e.getSource());
-				//System.out.println(e.getComponent());
 				jTable1MouseClicked(e);  
 				TablePanel tempTable = (TablePanel) e.getSource();
-				//System.out.println("mouseClicked: col="+tempTable.getSelectedColumn()+",row="+tempTable.getSelectedRow());
-				setFieldPrompt(tempTable);
+				//setFieldPrompt(tempTable);
 			}
         });
         
@@ -98,14 +98,14 @@ public class TablePanel extends JPanel{
            @Override
             public void actionPerformed(ActionEvent e) {
                // 自定义事件处理代码
-        	    TablePanel tempTable = (TablePanel) e.getSource();
+        	   JTable tempTable = (JTable) e.getSource();
         	    int col = tempTable.getSelectedColumn();
 				int row = tempTable.getSelectedRow();
 				if(col < tempTable.getColumnCount()-1){
 					tempTable.setColumnSelectionInterval(col+1, col+1);
 					tempTable.changeSelection(row, col+1, false, true);
 				}
-				setFieldPrompt(tempTable);
+				//setFieldPrompt(tempTable);
             }
         });
         am2.put("selectPreviousColumn", new AbstractAction(){
@@ -114,7 +114,7 @@ public class TablePanel extends JPanel{
              public void actionPerformed(ActionEvent e) {
                 // 自定义事件处理代码
             	
-            	TablePanel tempTable = (TablePanel) e.getSource();
+            	JTable tempTable = (JTable) e.getSource();
             	//JScrollPane scroll = tempTable.roll
 				int col = tempTable.getSelectedColumn();
 				int row = tempTable.getSelectedRow();
@@ -122,17 +122,25 @@ public class TablePanel extends JPanel{
 					tempTable.setColumnSelectionInterval(col-1, col-1);
 					tempTable.changeSelection(row, col-1, false, true);
 				}
-				setFieldPrompt(tempTable);
+				//setFieldPrompt(tempTable);
              }
          });
-
-        this.setActionMap(am1);
-        this.setActionMap(am2);
+        jTable.setActionMap(am1);
+		jTable.setActionMap(am2);
         
-        this.repaint();
-        this.updateUI(); 
+		jTable.repaint();
+		jTable.updateUI(); 
+		
+        tPanelLayout.setRowInfo(2, 300, 5, 5);
+		tPanelLayout.add(jTable, 2, 100, 'H', 0, 1, 'L');
+		
+		tPanelLayout.setRowInfo(3, 50, 5, 5);
+		tPanelLayout.add(promptLabel, 3, 100, 'H', 0, 1, 'L');
+		
+		this.repaint();
+		this.updateUI(); 
 	}
-	public void setFieldPrompt(TablePanel table){
+/*	public void setFieldPrompt(JTablePanel table){
 		int colnum = table.getSelectedColumn();
 		if(colnum > 0 && (frame.getSelectedModel().equals("Sql") && frame.getSqlstm()!=null || frame.getSelectedModel().equals("Record"))){
 			Vector<TableField> tableFields = new Vector<>();
@@ -156,29 +164,14 @@ public class TablePanel extends JPanel{
 		}else{
 			frame.getMessageLabel().setText(null);
 		}
-	}
+	}*/
 	
-	public void setFieldInfoTableDataFromQuery(String table,String model,String ssql,int begRow,int endRow){
-		if(model.equals("Sql")){
-			if(ssql == null || ssql.isEmpty()) return ;
-		ssql = ssql.replace('\n',' ');
-		}
-        		
-		setFieldInfoTableData(
-				QueryTableInfo.getTableRecordsRute(table,model,ssql,begRow,endRow), 
-				QueryTableInfo.getVectorShowColRute(table,model,ssql));
-		
-		//设置列宽
-        Utils.fitTableColumns(this);
-        //设置表格颜色
-        Utils.setTableColor(this);
-	}
-	
-	public void setFieldInfoTableData(Vector<?> rowData, Vector<?> colData){
+	public void setFieldInfoTableDataFromQuery(Vector rowData, Vector colData){
+		        		
 		DefaultTableModel model = new DefaultTableModel(rowData, colData);
-        this.setModel(model);
+        jTable.setModel(model);
         
-        String filterText = frame.getFilterString();
+        String filterText = filterStrTextField.getText();
         if(filterText == null || filterText.equals("")){
         	sorter.setRowFilter(null);
         }
@@ -187,7 +180,12 @@ public class TablePanel extends JPanel{
         }
         //为JTable设置排序器
         sorter.setModel(model);
-		this.setRowSorter(sorter); 
+        jTable.setRowSorter(sorter); 
+		
+		//设置列宽
+        fitTableColumns(jTable);
+        //设置表格颜色
+        setTableColor(jTable);
 	}
 	
 	private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {
@@ -195,32 +193,36 @@ public class TablePanel extends JPanel{
 	       mouseRightButtonClick(evt);
 	}
 	
+	public LayoutByRow getTablePanelLayout(){
+		return tPanelLayout;
+	}
+	
 	 //鼠标右键点击事件
  private void mouseRightButtonClick(java.awt.event.MouseEvent evt) {
      //判断是否为鼠标的BUTTON3按钮，BUTTON3为鼠标右键
      if (evt.getButton() == java.awt.event.MouseEvent.BUTTON3) {
          //通过点击位置找到点击为表格中的行
-         int focusedRowIndex = this.rowAtPoint(evt.getPoint());
+         int focusedRowIndex = jTable.rowAtPoint(evt.getPoint());
          if (focusedRowIndex == -1) {
              return;
          }
          selectRowValue.removeAllElements();
-         selectedRowNum = this.rowAtPoint(evt.getPoint());
-         selectedColNum = this.columnAtPoint(evt.getPoint());
-         for (int i=0; i<this.getColumnCount(); i++){
-        	 selectRowValue.addElement(this.getValueAt(selectedRowNum, i));
+         selectedRowNum = jTable.rowAtPoint(evt.getPoint());
+         selectedColNum = jTable.columnAtPoint(evt.getPoint());
+         for (int i=0; i<jTable.getColumnCount(); i++){
+        	 selectRowValue.addElement(jTable.getValueAt(selectedRowNum, i));
          }
          //System.out.println("selected:row="+selectedRowNum + " col="+selectedColNum + " value:"+selectedCellValue);
          //将表格所选项设为当前右键点击的行
-         this.setRowSelectionInterval(focusedRowIndex, focusedRowIndex);
+         jTable.setRowSelectionInterval(focusedRowIndex, focusedRowIndex);
          //弹出菜单
-         createPopupMenu();
+         //createPopupMenu();
          m_popupMenu.show(this, evt.getX(), evt.getY());
      }
 
  }
  
- private void createPopupMenu() {
+ /*private void createPopupMenu() {
      m_popupMenu = new JPopupMenu();
      
      JMenuItem updMenItem = new JMenuItem();
@@ -252,5 +254,86 @@ public class TablePanel extends JPanel{
          }
      });
      m_popupMenu.add(delMenItem);
- }
+ }*/
+ 
+	// 自动调整表格的列宽
+	public static void fitTableColumns(JTable myTable) {
+		JTableHeader header = myTable.getTableHeader();
+		int rowCount = myTable.getRowCount();
+		int fitLookSize = 10;  //为了美观，加大宽度
+
+		Enumeration<?> columns = myTable.getColumnModel().getColumns();
+		while (columns.hasMoreElements()) {
+			TableColumn column = (TableColumn) columns.nextElement();
+			int col = header.getColumnModel().getColumnIndex(column.getIdentifier());
+			int width = (int) myTable.getTableHeader().getDefaultRenderer()
+					.getTableCellRendererComponent(myTable, column.getIdentifier(), false, false, -1, col)
+					.getPreferredSize().getWidth(); // 列标题的宽度
+			for (int row = 0; row < rowCount; row++) {
+				int preferedWidth = (int) myTable.getCellRenderer(row, col)
+						.getTableCellRendererComponent(myTable, myTable.getValueAt(row, col), false, false, row, col)
+						.getPreferredSize().getWidth(); //
+				width = Math.max(width, preferedWidth);
+
+				myTable.getCellRenderer(row, col)
+						.getTableCellRendererComponent(myTable, myTable.getValueAt(row, col), false, false, row, col)
+						.setBackground(Color.red);
+			}
+			header.setResizingColumn(column); // 此行很重要
+			column.setWidth(width + myTable.getIntercellSpacing().width + fitLookSize);
+		}
+	}
+
+	// 设置表格颜色
+	public static void setTableColor(JTable myTable) {
+		int rowCount = myTable.getRowCount();// 行数
+		int colCount = myTable.getColumnCount();// 列数
+
+		DefaultTableCellRenderer tcr = new DefaultTableCellRenderer() {
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					boolean hasFocus, int row, int column) {
+				if ((row + 1) % 2 != 0)
+					setBackground(new Color(0xee, 0xee, 0xee));
+				else
+					setBackground(new Color(255, 255, 255));
+				return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			}
+		};
+
+		for (int i = 0; i < colCount; i++) {
+			myTable.getColumn(myTable.getColumnName(i)).setCellRenderer(tcr);
+		}
+	}
+	
+	public static void main(String[] args){
+		JFrame frame = new JFrame("test");
+		LayoutByRow frameLayout = new LayoutByRow(frame);
+		frameLayout.setRowInfo(1, 500, 10, 10);
+		
+		Connection conn = SqliteDB.getConnection();
+				
+		String tableName = "envdatabaseinfo";
+		Vector cols = null;
+		Vector rows = null;
+		try{
+			cols = Table.getTableFieldsComment(tableName, conn);
+			rows = Table.getTableRecords(tableName, null, conn);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		TablePanel tPanel = new TablePanel(rows, cols);
+		frameLayout.add(tPanel, 1, 500, 'H', 0, 1, 'L');
+		frameLayout.setCompLayout(tPanel, tPanel.getTablePanelLayout());
+		
+		//frame.add(tPanel);
+		frame.setBounds(450, 200, 530, 625);
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		
+		frameLayout.setRowPos();
+		
+		frame.setVisible(true);
+    	frame.repaint();
+	}
 }
+

@@ -341,7 +341,7 @@ public class Table {
 	 * @return 返回TableField的Vector数组
 	 * @throws Exception
 	 */
-	public static Vector<String> geTableFieldsComment(String tableName, Connection Conn) throws Exception{
+	public static Vector<String> getTableFieldsComment(String tableName, Connection Conn) throws Exception{
 		Vector<String> fieldscomment = new Vector<String>();
 		Vector<TableField> fields = new Vector<TableField>();
 		DatabaseMetaData md = Conn.getMetaData();

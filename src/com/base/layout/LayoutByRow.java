@@ -50,7 +50,7 @@ public class LayoutByRow {
 	 * @param jComp 被加载的组件
 	 * @param rowNum 行号
 	 * @param compWidth 组件宽度
-	 * @param pullingFlag 组件是否可拉伸 H/V/B
+	 * @param pullingFlag 组件是否可拉伸 H/V/B/N
 	 * @param vPullingScale 垂直拉伸比例
 	 * @param hPullingScale 水平拉伸比例
 	 * @param align 对齐方式 L/R
