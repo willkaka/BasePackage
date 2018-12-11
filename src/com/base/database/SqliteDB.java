@@ -11,7 +11,8 @@ import com.base.database.SqliteDB;
 
 public class SqliteDB {
 	//数据库地址
-	private String dataBasePath ="./data/TQDatabase.db";
+	//private String dataBasePath ="./data/TQDatabase.db";
+	private String dataBasePath ="./data/Database.db";
 	public static Connection con;
 	//构造方法
 	public SqliteDB(){
@@ -29,6 +30,16 @@ public class SqliteDB {
 		try{
 			Class.forName("org.sqlite.JDBC");
 			con = DriverManager.getConnection("jdbc:sqlite:" + dataBasePath);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//构造方法
+	public SqliteDB(DatabaseInfo databaseInfo){
+		try{
+			Class.forName(databaseInfo.getDriver());
+			con = DriverManager.getConnection("jdbc:sqlite:" + databaseInfo.getIp());
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

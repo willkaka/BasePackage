@@ -6,10 +6,13 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JComboBox;
+
 public class DatabaseInfo {
 	private int seq;
 	private String envname;
 	private String envdsc;
+	private String dbtype;
 	private String ip;
 	private int port;
 	private String label;
@@ -29,6 +32,7 @@ public class DatabaseInfo {
 				dbinfo.setSeq(rs.getInt("seq"));
 				dbinfo.setEnvname(rs.getString("envname"));
 				dbinfo.setEnvdsc(rs.getString("envdsc"));
+				dbinfo.setDbtype(rs.getString("dbtype"));
 				dbinfo.setIp(rs.getString("ip"));
 				dbinfo.setPort(rs.getInt("port"));
 				dbinfo.setLabel(rs.getString("label"));
@@ -58,6 +62,7 @@ public class DatabaseInfo {
 				dbinfo.setSeq(rs.getInt("seq"));
 				dbinfo.setEnvname(rs.getString("envname"));
 				dbinfo.setEnvdsc(rs.getString("envdsc"));
+				dbinfo.setDbtype(rs.getString("dbtype"));
 				dbinfo.setIp(rs.getString("ip"));
 				dbinfo.setPort(rs.getInt("port"));
 				dbinfo.setLabel(rs.getString("label"));
@@ -72,6 +77,31 @@ public class DatabaseInfo {
 		}
 		
 		return dbinfo;
+	}
+	
+	public static Connection getDBConnection(DatabaseInfo databaseInfo){
+		Connection connection = null;
+		
+		if(databaseInfo.getDbtype() == null) {
+			return null;
+		}
+		
+		if("Oracle".equals(databaseInfo.getDbtype())){
+			OracleDB db = new OracleDB(databaseInfo);
+			connection = db.getConnection();
+		}
+		
+		if("MySql".equals(databaseInfo.getDbtype())){
+			MysqlDB db = new MysqlDB(databaseInfo);
+			connection = db.getConnection();
+		}
+		
+		if("Sqlite".equals(databaseInfo.getDbtype())){
+			SqliteDB db = new SqliteDB(databaseInfo);
+			connection = db.getConnection();
+		}
+		
+		return connection;
 	}
 
 	public int getSeq() {
@@ -98,7 +128,15 @@ public class DatabaseInfo {
 	public void setEnvdsc(String envdsc) {
 		this.envdsc = envdsc;
 	}
+	
+	public String getDbtype() {
+		return dbtype;
+	}
 
+	public void setDbtype(String dbtype) {
+		this.dbtype = dbtype;
+	}
+	
 	public String getIp() {
 		return ip;
 	}

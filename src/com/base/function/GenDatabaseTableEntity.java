@@ -35,7 +35,9 @@ import javax.tools.ToolProvider;
 import javax.tools.JavaCompiler.CompilationTask;
 
 import com.base.database.ClassUtil;
+import com.base.database.DatabaseInfo;
 import com.base.database.OracleDB;
+import com.base.database.SqliteDB;
 import com.base.database.Table;
  
 /**
@@ -442,7 +444,9 @@ public class GenDatabaseTableEntity {
     public static void main(String[] args){
     	
     	//数据库连接
-    	OracleDB oracleDB = new OracleDB(OracleDB.databaseInfo);
+    	SqliteDB sqliteDB = new SqliteDB();
+    	DatabaseInfo databaseInfo = DatabaseInfo.getDatabaseInfo(sqliteDB.getConnection(), "DEV");
+    	OracleDB oracleDB = new OracleDB(databaseInfo);
     	Connection connection = oracleDB.getConnection();
     	
     	try {
@@ -501,7 +505,7 @@ public class GenDatabaseTableEntity {
 			e.printStackTrace();
 		}
 		
-		if(connection != null) OracleDB.closeCon();
+		//if(connection != null) OracleDB.closeCon();
     	
     }
 }

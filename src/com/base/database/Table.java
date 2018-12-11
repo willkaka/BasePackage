@@ -27,13 +27,33 @@ import java.util.Vector;
 
 import com.base.function.DynamicCompilerUtil;
 import com.base.function.GenDatabaseTableEntity;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 public class Table {
 	private static int seq_max=0;
 	private int seq = 0;
 	private String tableName = null;
-	private String tableShortName = null;
+	private String tableShortName = "";
+	private String tableDsc = "";
+	private String tableDataBase = "";
+	private int tableRows = 0;
 	
+	public int getTableRows() {
+		return tableRows;
+	}
+
+	public void setTableRows(int tableRows) {
+		this.tableRows = tableRows;
+	}
+
+	public String getTableDataBase() {
+		return tableDataBase;
+	}
+
+	public void setTableDataBase(String tableDataBase) {
+		this.tableDataBase = tableDataBase;
+	}
+
 	public Table(){
 		setSeq(seq_max++);
 	}
@@ -130,6 +150,14 @@ public class Table {
 		}
 	}
 	
+	public String getTableDsc() {
+		return tableDsc;
+	}
+
+	public void setTableDsc(String tableDsc) {
+		this.tableDsc = tableDsc;
+	}
+
 	/**
 	 * 自动创建数据表对应的类
 	 * @param tableName表名
@@ -239,18 +267,50 @@ public class Table {
 	public static Vector getTableRecords(String tableName, HashMap<String,Object> keyAndValues, Connection Conn) throws Exception{
 		Vector tableRecords = new Vector();
 		
-		String sqlStm = " select * from " + tableName +" WHERE ";
+		String sSelectFields = " * ";
+		if(keyAndValues != null){
+			for (Entry<String, Object> entry : keyAndValues.entrySet()) {
+				if("select".equals(entry.getKey().toString()) ) {
+					sSelectFields = " " + entry.getValue().toString() + " ";
+					break;
+				}
+			}
+		}
+		String sqlStm = " SELECT " + sSelectFields + " FROM " + tableName ;
 		
 		int countNum = 0;
 		if(keyAndValues != null){
-			for (Entry<String, Object> entry : keyAndValues.entrySet()) { 
-				  	if(countNum != 0) sqlStm += " AND ";
-					sqlStm += entry.getKey() + " = " + entry.getValue();
-					countNum++;
+			for (Entry<String, Object> entry : keyAndValues.entrySet()) {
+				if("select".equals(entry.getKey().toString().toLowerCase()) ||
+				   "order".equals(entry.getKey().toString().toLowerCase()) ||
+				   "group".equals(entry.getKey().toString().toLowerCase())	) continue;
+				
+				if(countNum == 0) sqlStm += " WHERE ";
+			  	if(countNum != 0) sqlStm += " AND ";
+			  	
+				sqlStm += entry.getKey() + " = '" + entry.getValue() +"'";
+				countNum++;
 			}
 		}
 		if (countNum == 0) sqlStm = " select * from " + tableName;
 		
+		if(keyAndValues != null){
+			for (Entry<String, Object> entry : keyAndValues.entrySet()) { 
+			  	if("order".equals(entry.getKey().toString().toLowerCase()) ){
+			  		sqlStm += " " + entry.getValue() +" ";
+			  	}
+			}
+		}
+		
+		if(keyAndValues != null){
+			for (Entry<String, Object> entry : keyAndValues.entrySet()) { 
+			  	if("group".equals(entry.getKey().toString().toLowerCase()) ){
+			  		sqlStm += " " + entry.getValue() +" ";
+			  		break;
+			  	}
+			}
+		}
+		System.out.println(sqlStm);
 		PreparedStatement preparedStatement = Conn.prepareStatement(sqlStm);
 		ResultSet rs = preparedStatement.executeQuery();
 		while(rs.next()){
@@ -259,7 +319,7 @@ public class Table {
 			for (int fieldNum = 1; fieldNum <= metaData.getColumnCount(); fieldNum++){
 				if(metaData.getColumnName(fieldNum) != null && !"".equals(metaData.getColumnName(fieldNum))){
 					String fieldName = metaData.getColumnName(fieldNum);
-					int fieldType = metaData.getColumnType(fieldNum);
+					//int fieldType = metaData.getColumnType(fieldNum);
 					Object fieldValue = rs.getObject(fieldName);
 					
 					//找到字段set方法，并调用赋值。
@@ -341,14 +401,19 @@ public class Table {
 	 * @return 返回TableField的Vector数组
 	 * @throws Exception
 	 */
-	public static Vector<String> getTableFieldsComment(String tableName, Connection Conn) throws Exception{
+	public static Vector<String> getTableFieldsComment(String tableName, HashMap<String,Object> keyAndValues, Connection Conn) throws Exception{
 		Vector<String> fieldscomment = new Vector<String>();
 		Vector<TableField> fields = new Vector<TableField>();
 		DatabaseMetaData md = Conn.getMetaData();
+		
 		if(md.getDriverName().equals("SQLite JDBC")){
-			fields = geTableFieldsSqlite(tableName, Conn);
+			fields = geTableFieldsSqlite(tableName, keyAndValues, Conn);
+		}else if(md.getDriverName().equals("Oracle JDBC driver")){
+			fields = geTableFieldsOracle(tableName, keyAndValues, Conn);
+		}else if(md.getDriverName().equals("MySQL Connector Java") || md.getDriverName().equals("MySQL Connector/J")){
+			fields = geTableFieldsMysql(tableName, keyAndValues, Conn);
 		}else{
-			fields = geTableFieldsOracle(tableName, Conn);
+			return null;
 		}
 		
 		for(TableField field:fields){
@@ -365,12 +430,17 @@ public class Table {
 	 * @return 返回TableField的Vector数组
 	 * @throws Exception
 	 */
-	public static Vector<TableField> geTableFields(String tableName, Connection Conn) throws Exception{
+	public static Vector<TableField> geTableFields(String tableName, HashMap<String,Object> keyAndValues, Connection Conn) throws Exception{
 		DatabaseMetaData md = Conn.getMetaData();
+		System.out.println(md.getDriverName());
 		if(md.getDriverName().equals("SQLite JDBC")){
-			return geTableFieldsSqlite(tableName, Conn);
+			return geTableFieldsSqlite(tableName, keyAndValues, Conn);
+		}else if(md.getDriverName().equals("Oracle JDBC driver")){
+			return geTableFieldsOracle(tableName, keyAndValues, Conn);
+		}else if(md.getDriverName().equals("MySQL Connector Java") || md.getDriverName().equals("MySQL Connector/J")){
+			return geTableFieldsMysql(tableName, keyAndValues, Conn);
 		}else{
-			return geTableFieldsOracle(tableName, Conn);
+			return null;
 		}
 	}
 	
@@ -381,11 +451,22 @@ public class Table {
 	 * @return 返回TableField的Vector数组
 	 * @throws Exception
 	 */
-	public static Vector<TableField> geTableFieldsOracle(String tableName, Connection Conn) throws Exception{
+	public static Vector<TableField> geTableFieldsMysql(String tableName, HashMap<String,Object> keyAndValues, Connection Conn) throws Exception{
 		Vector<TableField> fields = new Vector<TableField>();
-		String sqlStm = "select a.Column_Name,a.Data_Type,a.Data_Length,a.Data_Precision,a.Data_Scale,a.Nullable,a.Column_id,b.Comments "
-			+ "from user_tab_columns a,user_col_comments b where a.table_name =UPPER('" + tableName 
-			+ "') and a.Table_Name = b.Table_Name and a.Column_Name = b.Column_Name ORDER by a.Column_ID";
+		
+		String sqlStm = "select * from information_schema.COLUMNS where TABLE_SCHEMA = (select database()) and table_name = '" + tableName	+ "'";
+		
+		String[] aSelectFields = null; 
+		if(keyAndValues != null){
+			for (Entry<String, Object> entry : keyAndValues.entrySet()) {
+				if("select".equals(entry.getKey().toString()) ) {
+					if(!"*".equals(entry.getValue().toString().trim())){
+						aSelectFields = entry.getValue().toString().split(",");
+						break;
+					}
+				}
+			}
+		}
 		
 		PreparedStatement preparedStatement = Conn.prepareStatement(sqlStm);
 		ResultSet rs = preparedStatement.executeQuery();
@@ -393,10 +474,23 @@ public class Table {
 			TableField field = new TableField();
 			field.setFieldName(rs.getString("Column_Name"));
 			field.setFieldType(rs.getString("Data_Type"));
-			field.setFieldLen(rs.getInt("Data_Length"));
-			field.setFieldDec(rs.getInt("Data_Scale"));
-			field.setFieldDsc(rs.getString("Comments"));
-			fields.addElement(field);
+			if(rs.getObject("Character_Maximum_Length") != null){
+				field.setFieldLen(rs.getInt("Character_Maximum_Length"));
+			}else if(rs.getObject("Numeric_Precision") != null){
+				field.setFieldLen(rs.getInt("Numeric_Precision"));
+			}else{
+				field.setFieldLen( 0 );
+			}
+			field.setFieldDec(rs.getInt("Numeric_Scale"));
+			field.setFieldDsc(rs.getString("Column_Comment"));
+			
+			if(aSelectFields != null){
+				if(Arrays.asList(aSelectFields).contains(field.getFieldName().toLowerCase())){
+					fields.addElement(field);
+				}
+			}else{
+				fields.addElement(field);
+			}
 		}
 		return fields;
 	}
@@ -408,9 +502,67 @@ public class Table {
 	 * @return 返回TableField的Vector数组
 	 * @throws Exception
 	 */
-	public static Vector<TableField> geTableFieldsSqlite(String tableName, Connection Conn) throws Exception{
+	public static Vector<TableField> geTableFieldsOracle(String tableName, HashMap<String,Object> keyAndValues, Connection Conn) throws Exception{
+		Vector<TableField> fields = new Vector<TableField>();
+		String sqlStm = "select a.Column_Name,a.Data_Type,a.Data_Length,a.Data_Precision,a.Data_Scale,a.Nullable,a.Column_id,b.Comments "
+			+ "from user_tab_columns a,user_col_comments b where a.table_name =UPPER('" + tableName 
+			+ "') and a.Table_Name = b.Table_Name and a.Column_Name = b.Column_Name ORDER by a.Column_ID";
+		
+		String[] aSelectFields = null; 
+		if(keyAndValues != null){
+			for (Entry<String, Object> entry : keyAndValues.entrySet()) {
+				if("select".equals(entry.getKey().toString()) ) {
+					if(!"*".equals(entry.getValue().toString().trim())){
+						aSelectFields = entry.getValue().toString().split(",");
+						break;
+					}
+				}
+			}
+		}
+		
+		PreparedStatement preparedStatement = Conn.prepareStatement(sqlStm);
+		ResultSet rs = preparedStatement.executeQuery();
+		while (rs.next()) {
+			TableField field = new TableField();
+			field.setFieldName(rs.getString("Column_Name"));
+			field.setFieldType(rs.getString("Data_Type"));
+			field.setFieldLen(rs.getInt("Data_Length"));
+			field.setFieldDec(rs.getInt("Data_Scale"));
+			field.setFieldDsc(rs.getString("Comments"));
+			
+			if(aSelectFields != null){
+				if(Arrays.asList(aSelectFields).contains(field.getFieldName().toLowerCase())){
+					fields.addElement(field);
+				}
+			}else{
+				fields.addElement(field);
+			}
+		}
+		return fields;
+	}
+	
+	/**
+	 * 返回数据表字段信息
+	 * @param tableName数据表名称
+	 * @param Conn数据库连接
+	 * @return 返回TableField的Vector数组
+	 * @throws Exception
+	 */
+	public static Vector<TableField> geTableFieldsSqlite(String tableName, HashMap<String,Object> keyAndValues, Connection Conn) throws Exception{
 		Vector<TableField> fields = new Vector<TableField>();
 		String sqlStm = "pragma table_info ('" + tableName + "')";
+		
+		String[] aSelectFields = null; 
+		if(keyAndValues != null){
+			for (Entry<String, Object> entry : keyAndValues.entrySet()) {
+				if("select".equals(entry.getKey().toString()) ) {
+					if(!"*".equals(entry.getValue().toString().trim())){
+						aSelectFields = entry.getValue().toString().split(",");
+						break;
+					}
+				}
+			}
+		}
 		
 		PreparedStatement preparedStatement = Conn.prepareStatement(sqlStm);
 		ResultSet rs = preparedStatement.executeQuery();
@@ -444,7 +596,13 @@ public class Table {
 				field.setFieldDsc(comments);
 			}
 			
-			fields.addElement(field);
+			if(aSelectFields != null){
+				if(Arrays.asList(aSelectFields).contains(field.getFieldName().toLowerCase())){
+					fields.addElement(field);
+				}
+			}else{
+				fields.addElement(field);
+			}
 			
 		}
 		return fields;
@@ -474,6 +632,27 @@ public class Table {
 	}
 	
 	/**
+	 * 取指定数据表字段的描述
+	 * @param tableName
+	 * @param fieldName
+	 * @param connection
+	 * @return
+	 */
+	public static String getTableFieldCommentsMysql(String tableName, String fieldName,Connection connection){
+		try{
+			Vector<TableField> fields = geTableFieldsMysql(tableName, null, connection);
+			for(TableField tableField:fields){
+				if(tableField.getFieldName().toLowerCase().equals(fieldName.toLowerCase())){
+					return tableField.getFieldDsc();
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
 	 * 判断数据表是否存在
 	 * @param tableName
 	 * @param connection
@@ -492,6 +671,30 @@ public class Table {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * 返回数据表字段信息
+	 * @param tableName数据表名称
+	 * @param Conn数据库连接
+	 * @return 返回TableField的Vector数组
+	 * @throws Exception
+	 */
+	public static ArrayList<Table> getMysqlTableList(Connection Conn) throws Exception{
+		ArrayList<Table> aTables = new ArrayList<Table>();
+		String sqlStm = "select * from information_schema.tables where table_schema=(select database()) and table_type='base table'";
+		
+		PreparedStatement preparedStatement = Conn.prepareStatement(sqlStm);
+		ResultSet rs = preparedStatement.executeQuery();
+		while (rs.next()) {
+			Table table = new Table();
+			table.setTableName(rs.getString("table_name"));
+			table.setTableDsc(rs.getString("table_comment"));
+			table.setTableDataBase(rs.getString("table_schema"));
+			table.setTableRows(rs.getInt("table_rows"));
+			aTables.add(table);
+		}
+		return aTables;
 	}
 	
 	/**

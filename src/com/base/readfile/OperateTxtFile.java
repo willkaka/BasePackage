@@ -118,7 +118,7 @@ public class OperateTxtFile {
         try {
             //String content = "测试使用字符串";
             File file = new File(filePath);
-            //文件不存在时候，主动穿件文件。
+            //文件不存在时候，主动创件文件。
             if(!file.exists()){
                 System.out.println("Begin ----  Create TxtFile");
                 file.createNewFile();
@@ -140,6 +140,11 @@ public class OperateTxtFile {
         }
     }
     
+    /**
+     * 
+     * @param filePath
+     * @param content
+     */
     public static void writeToTxtFile2(String filePath, String content) {
         try {
             File file = new File(filePath);
@@ -155,7 +160,8 @@ public class OperateTxtFile {
             long fileLength = randomFile.length();
             // 将写文件指针移到文件尾。
             randomFile.seek(fileLength);
-            randomFile.writeBytes(content + "\r\n");
+            //randomFile.writeBytes(content + "\r\n");
+            randomFile.write((content + "\r\n").getBytes());
             randomFile.close();
         } catch (IOException e) {
             e.printStackTrace();

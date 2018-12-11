@@ -13,11 +13,12 @@ public class PrcString {
 		int indexNum = 0;
 		String out = "";
 		String subs = "";
-		ArrayList<String> stringList = getWords();
+		//ArrayList<String> stringList = getWords();
+		ArrayList<String> stringList = getWordsFromWordLibrary();
 		for (int beg = 0; beg < inputstring.length(); beg++) {
 			for (int i = inputstring.length(); i >= beg + 1; i--) {
 				subs = inputstring.substring(beg, i);
-				indexNum = stringList.indexOf(subs);
+				indexNum = stringList.indexOf(subs.toLowerCase());
 				if (indexNum >= 0) {
 					out = out + firstLetterToUppercase(stringList.get(indexNum));
 					beg = i - 1;
@@ -40,7 +41,7 @@ public class PrcString {
 		String out = "";
 		for (int i = 0; i < s.length(); i++) {
 			if (i == 0)
-				out = s.substring(0, 1);
+				out = s.substring(0, 1).toUpperCase();
 			else
 				out = out + s.substring(i, i + 1).toLowerCase();
 		}
@@ -68,13 +69,18 @@ public class PrcString {
         ArrayList<String> wordListTemp = OperateTxtFile.readFile3(ConstDefined.TXT_FILE_PATH_WORDLIBRARY);
         
         for (String line : wordListTemp){
-            wordList.add(line.substring(0, line.indexOf('[')));
+        	if(line.length()>0){
+        		wordList.add(line.substring(0, line.indexOf('[')));
+        	}
         }
         
         return wordList;
     }
 	
-/*	public static void main(String[] args){
-		ArrayList<String> wList = getWordsFromWordLibrary();
-	}*/
+ 	public static void main(String[] args){
+		//ArrayList<String> wList = getWordsFromWordLibrary();
+		
+		String ss = "BUSINESSSUBTYPE";
+		System.out.println(PrcString.ConvertToCamelCase(ss));
+	}
 }

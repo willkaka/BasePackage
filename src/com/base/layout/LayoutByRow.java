@@ -1,17 +1,10 @@
 package com.base.layout;
 
-import java.awt.Component;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-
-import org.apache.poi.sl.draw.geom.ArcToCommand;
-
-import com.base.comp.JClosableTabbedPane;
 
 /**
  * 按行布局

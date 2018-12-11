@@ -191,7 +191,7 @@ public class JTablePanel_OprTable {
 	public void updateRecord(String tableName, Connection connection){
 		Vector<TableField> tableFields = new Vector<TableField>();
 		try {
-			tableFields = Table.geTableFields(tableName, connection);
+			tableFields = Table.geTableFields(tableName, null, connection);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -265,7 +265,7 @@ public class JTablePanel_OprTable {
 	public void insertNewRecord(String tableName, Connection connection){
 		Vector<TableField> tableFields = new Vector<TableField>();
 		try {
-			tableFields = Table.geTableFields(tableName, connection);
+			tableFields = Table.geTableFields(tableName, null, connection);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -313,7 +313,7 @@ public class JTablePanel_OprTable {
 	public void deleteRecord(String tableName, Connection connection){
 		Vector<TableField> tableFields = new Vector<TableField>();
 		try {
-			tableFields = Table.geTableFields(tableName, connection);
+			tableFields = Table.geTableFields(tableName, null, connection);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -368,7 +368,7 @@ public class JTablePanel_OprTable {
 	public void addLabelTextfield(String table, LayoutByRow defBoundLayout, int startRow, char oprCode, Connection connection) {
 		Vector<TableField> tableFields = new Vector<TableField>();
 		try {
-			tableFields = Table.geTableFields(table, connection);
+			tableFields = Table.geTableFields(table, null, connection);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

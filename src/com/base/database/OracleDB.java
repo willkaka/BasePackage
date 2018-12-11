@@ -7,10 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class OracleDB {
-	public static String env = "DEV";
-	public static DatabaseInfo databaseInfo = null;
+	public String env = "DEV";
+	public DatabaseInfo databaseInfo = null;
 
-	public static Connection con;
+	public Connection con;
 	
 	//构造方法
 /*	public OracleDB(String DatabaseEnv){
@@ -36,8 +36,8 @@ public class OracleDB {
 			}
 			
 			//关闭原有连接
-			if(OracleDB.databaseInfo != null && OracleDB.databaseInfo != databaseInfo){
-				if(OracleDB.con != null) OracleDB.con.close();
+			if(databaseInfo != null && databaseInfo != databaseInfo){
+				if(con != null) con.close();
 			}
 			
 			Class.forName(databaseInfo.getDriver()).newInstance();
@@ -49,11 +49,11 @@ public class OracleDB {
         }
 	}
 	
-	public static Connection getConnection(){
+	public Connection getConnection(){
 		return con;
 	}
 	
-	public static ResultSet getSqlResultSet(String sql){
+	public ResultSet getSqlResultSet(String sql){
 		if(con == null)
 			new OracleDB(databaseInfo);
 		
@@ -67,7 +67,7 @@ public class OracleDB {
 		return null;
 	}
 	
-	public static void exeSql(String sql) throws Exception{
+	public void exeSql(String sql) throws Exception{
 		if(con == null)
 			new OracleDB(databaseInfo);
 		
@@ -76,7 +76,7 @@ public class OracleDB {
 		pra.close();
 	}
 	
-	public static void closeCon(){
+	public void closeCon(){
 		if(con != null){
 			try{
 				con.close();
@@ -90,7 +90,7 @@ public class OracleDB {
 		new OracleDB(DatabaseInfo.getDatabaseInfo(sqliteConn, env));
 	}*/
 	
-	public static void setDatabaseInfo(DatabaseInfo databaseInfo){
-		OracleDB.databaseInfo = databaseInfo;
+	public void setDatabaseInfo(DatabaseInfo databaseInfo){
+		this.databaseInfo = databaseInfo;
 	}
 }
